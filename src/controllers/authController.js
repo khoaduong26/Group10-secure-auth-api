@@ -14,6 +14,31 @@ const register = async (req, res) => {
     }
 };
 
+const login = async (req, res) => {
+    try {
+        const { email, password } = req.body;
+        const result = await authService.login(email, password);
+
+        return res.status(200).json({
+            message: 'Đăng nhập thành công.',
+            token: result.token,
+            user: result.user,
+            url: result.redirectUrl
+        });
+    } catch (error) {
+        if (error.message === 'INVALID_CREDENTIALS') {
+            return res.status(401).json({ message: 'Email hoặc mật khẩu không đúng.' });
+        }
+
+        if (error.message === 'ACCOUNT_INACTIVE') {
+            return res.status(403).json({ message: 'Tài khoản chưa được kích hoạt.' });
+        }
+
+        console.error(error);
+        return res.status(500).json({ message: 'Lỗi Server Internal' });
+    }
+};
+
 const verifyOtp = async (req, res) => {
     try {
         const { email, otp } = req.body;
@@ -26,4 +51,12 @@ const verifyOtp = async (req, res) => {
     }
 };
 
-module.exports = { register, verifyOtp };
+const getProfile = async (req, res) => {
+    return res.status(200).json({
+        message: 'Lấy thông tin profile thành công.',
+        user: req.user,
+        url: req.user.role === 'ADMIN' ? '/admin/profile' : '/user/profile'
+    });
+};
+
+module.exports = { register, login, verifyOtp, getProfile };
