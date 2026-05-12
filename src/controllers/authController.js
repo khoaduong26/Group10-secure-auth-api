@@ -1,29 +1,42 @@
 const authService = require('../services/authService');
 
-const register = async (req, res) => {
+const forgotPassword = async (req, res) => {
     try {
-        const { email, password } = req.body;
-        await authService.register(email, password);
-        return res.status(200).json({ message: "Đăng ký thành công. Vui lòng kiểm tra email để lấy OTP." });
+
+        const result = await authService.forgotPassword(
+            req.body.email
+        );
+
+        res.status(200).json(result);
+
     } catch (error) {
-        if (error.message === 'EMAIL_EXISTS') {
-            return res.status(409).json({ message: "Email đã tồn tại trong hệ thống." });
-        }
-        console.error(error);
-        return res.status(500).json({ message: "Lỗi Server Internal" });
+
+        res.status(400).json({
+            message: error.message
+        });
     }
 };
 
-const verifyOtp = async (req, res) => {
+const resetPassword = async (req, res) => {
     try {
-        const { email, otp } = req.body;
-        await authService.verifyOtp(email, otp);
-        return res.status(200).json({ message: "Xác thực thành công. Tài khoản đã được kích hoạt." });
+
+        const result = await authService.resetPassword(
+            req.body.email,
+            req.body.otp,
+            req.body.newPassword
+        );
+
+        res.status(200).json(result);
+
     } catch (error) {
-        if (error.message === 'OTP_INVALID') return res.status(400).json({ message: "Mã OTP không chính xác." });
-        if (error.message === 'OTP_EXPIRED') return res.status(400).json({ message: "Mã OTP đã hết hạn." });
-        return res.status(500).json({ message: "Lỗi Server Internal" });
+
+        res.status(400).json({
+            message: error.message
+        });
     }
 };
 
-module.exports = { register, verifyOtp };
+module.exports = {
+    forgotPassword,
+    resetPassword
+};
