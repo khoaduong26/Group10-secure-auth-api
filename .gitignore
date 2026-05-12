@@ -1,5 +1,5 @@
 node_modules/
-
+pnpm-lock.yaml
 .env
 BaiTapB2.postman_collection.json
 package.json
