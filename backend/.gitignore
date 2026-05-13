@@ -1,6 +1,3 @@
 node_modules/
 
 .env
-BaiTapB2.postman_collection.json
-package.json
-package-lock.json
